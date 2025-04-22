@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 
+type EventOption = {
+  label: string;
+  effect: (revenue: number, clickPower: number) => number | { r?: number; cp?: number };
+};
+
 type StartupEvent = {
   text: string;
-  options: {
-    label: string;
-    effect: (revenue: number, clickPower: number) => number | { r?: number; cp?: number };
-  }[];
+  options: EventOption[];
 };
 
 const productIdeas = [
@@ -96,9 +98,7 @@ export default function Home() {
     setSlogan("");
   };
 
-  const handleEventChoice = (
-    option: StartupEvent["options"][number]
-  ) => {
+  const handleEventChoice = (option: EventOption) => {
     const result = option.effect(revenue, clickPower);
     if (typeof result === "object") {
       if (result.r !== undefined) setRevenue(result.r);
