@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 
-type EventOption = {
-  label: string;
-  effect: (revenue: number, clickPower: number) => number | { r?: number; cp?: number };
-};
-
 type StartupEvent = {
   text: string;
-  options: EventOption[];
+  options: {
+    label: string;
+    effect: (revenue: number, clickPower: number) => number | { r?: number; cp?: number };
+  }[];
 };
 
 const productIdeas = [
@@ -52,15 +50,15 @@ const eventPrompts: StartupEvent[] = [
 ];
 
 export default function Home() {
-  const [revenue, setRevenue] = useState(0);
-  const [product, setProduct] = useState(productIdeas[0]);
-  const [clickPower, setClickPower] = useState(1);
-  const [level, setLevel] = useState(1);
+  const [revenue, setRevenue] = useState<number>(0);
+  const [product, setProduct] = useState<string>(productIdeas[0]);
+  const [clickPower, setClickPower] = useState<number>(1);
+  const [level, setLevel] = useState<number>(1);
   const [event, setEvent] = useState<StartupEvent | null>(null);
   const [floatingCash, setFloatingCash] = useState<number[]>([]);
-  const [passivePower, setPassivePower] = useState(0);
-  const [upgradeMsg, setUpgradeMsg] = useState("");
-  const [slogan, setSlogan] = useState("");
+  const [passivePower, setPassivePower] = useState<number>(0);
+  const [upgradeMsg, setUpgradeMsg] = useState<string>("");
+  const [slogan, setSlogan] = useState<string>("");
 
   const handleWork = () => {
     setRevenue((prev) => prev + clickPower);
@@ -98,7 +96,7 @@ export default function Home() {
     setSlogan("");
   };
 
-  const handleEventChoice = (option: EventOption) => {
+  const handleEventChoice = (option: StartupEvent["options"][number]) => {
     const result = option.effect(revenue, clickPower);
     if (typeof result === "object") {
       if (result.r !== undefined) setRevenue(result.r);
