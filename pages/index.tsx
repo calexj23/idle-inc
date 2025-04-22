@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
 
+type StartupEvent = {
+  text: string;
+  options: {
+    label: string;
+    effect: (revenue: number, clickPower: number) => number | { r?: number; cp?: number };
+  }[];
+};
+
 const productIdeas = [
   "AI for houseplants 🌿",
   "Smart fridge that roasts your outfit choices 🧥",
@@ -24,18 +32,18 @@ const slogans = [
   "Serving nonsense. At scale.",
 ];
 
-const eventPrompts = [
+const eventPrompts: StartupEvent[] = [
   {
     text: "Your AI toaster went viral on TikTok. Do you sell it to a VC?",
     options: [
-      { label: "Sell and cash out (+$100)", effect: (r: number) => r + 100 },
-      { label: "Stay indie (double click power)", effect: (r: number, cp: number) => ({ cp: cp * 2 }) },
+      { label: "Sell and cash out (+$100)", effect: (r) => r + 100 },
+      { label: "Stay indie (double click power)", effect: (r, cp) => ({ cp: cp * 2 }) },
     ],
   },
   {
     text: "A user trained your app to say bad words. Do damage control?",
     options: [
-      { label: "Hire PR firm (-$50)", effect: (r: number) => r - 50 },
+      { label: "Hire PR firm (-$50)", effect: (r) => r - 50 },
       { label: "Ignore and rebrand (reset revenue)", effect: () => ({ r: 0 }) },
     ],
   },
@@ -46,14 +54,14 @@ export default function Home() {
   const [product, setProduct] = useState(productIdeas[0]);
   const [clickPower, setClickPower] = useState(1);
   const [level, setLevel] = useState(1);
-  const [event, setEvent] = useState<any | null>(null);
+  const [event, setEvent] = useState<StartupEvent | null>(null);
   const [floatingCash, setFloatingCash] = useState<number[]>([]);
   const [passivePower, setPassivePower] = useState(0);
   const [upgradeMsg, setUpgradeMsg] = useState("");
   const [slogan, setSlogan] = useState("");
 
   const handleWork = () => {
-    setRevenue(prev => prev + clickPower);
+    setRevenue((prev) => prev + clickPower);
     const id = Date.now();
     setFloatingCash((prev) => [...prev, id]);
     setTimeout(() => {
@@ -88,7 +96,9 @@ export default function Home() {
     setSlogan("");
   };
 
-  const handleEventChoice = (option: any) => {
+  const handleEventChoice = (
+    option: StartupEvent["options"][number]
+  ) => {
     const result = option.effect(revenue, clickPower);
     if (typeof result === "object") {
       if (result.r !== undefined) setRevenue(result.r);
@@ -148,7 +158,7 @@ export default function Home() {
         <div style={eventBoxStyle}>
           <h3>⚠️ Startup Event!</h3>
           <p>{event.text}</p>
-          {event.options.map((opt: any, idx: number) => (
+          {event.options.map((opt, idx) => (
             <button key={idx} onClick={() => handleEventChoice(opt)} style={btnStyle}>
               {opt.label}
             </button>
